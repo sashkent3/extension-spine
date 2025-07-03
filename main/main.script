@@ -78,8 +78,22 @@ function init(self)
 	--go.set(self.url, "cursor", 0.90)
 
 	-- attachments
+	timer.delay(
+		1, true, function(self, handle, time_elapsed)
+			local rnd = math.random()
+			if rnd > 0.25 then
+				spine.set_attachment(self.url, "mouth", "mouth-oooo")
+			elseif rnd > 0.5 then
+				spine.set_attachment(self.url, "mouth", "mouth-smile")
+			elseif rnd > 0.75 then
+				spine.set_attachment(self.url, "mouth", "mouth-grind")
+			else
+				go.delete(self.url)
+			end
+		end
+	)
 	--spine.set_attachment(self.url, "mouth", "mouth-oooo")
-	spine.set_attachment(self.url, "mouth", "mouth-smile")
+	--spine.set_attachment(self.url, "mouth", "mouth-smile")
 	--spine.set_attachment(self.url, "mouth", "mouth-grind")
 
 	-- bones

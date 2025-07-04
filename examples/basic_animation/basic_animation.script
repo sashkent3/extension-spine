@@ -31,7 +31,7 @@ function init(self)
 	go.set(self.url, "skin", hash(""))
 	
 	-- Attachments
-	spine.set_attachment(self.url, "mouth", "mouth-smile")
+	spine.set_attachment(msg.url("basic_animation", "/non_existent", "spinemodel"), "mouth", "mouth-smile")
 	
 	-- Bones
 	local bone = spine.get_go(self.url, "gun-tip")

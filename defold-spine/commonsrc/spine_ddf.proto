@@ -45,6 +45,7 @@ message SpinePlayAnimation
     optional float offset = 4 [default = 0.0];
     optional float playback_rate = 5 [default = 1.0];
     optional int32 track = 6 [default = 0];
+    optional bool additive_mix = 7 [default = 0];
 }
 
 /*# Spine model API documentation

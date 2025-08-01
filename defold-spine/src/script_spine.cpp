@@ -281,6 +281,7 @@ namespace dmSpine
         lua_Integer playback = luaL_checkinteger(L, 3);
         lua_Integer track = 1;
         lua_Number blend_duration = 0.0, offset = 0.0, playback_rate = 1.0;
+        int additive_mix = 0;
 
         if (top > 3) // table with args
         {
@@ -303,6 +304,10 @@ namespace dmSpine
             track = lua_isnil(L, -1) ? 1 : luaL_checkinteger(L, -1);
             lua_pop(L, 1);
 
+            lua_getfield(L, -1, "additive_mix");
+            additive_mix = lua_toboolean(L, -1);
+            lua_pop(L, 1);
+
             lua_pop(L, 1);
         }
 
@@ -322,6 +327,7 @@ namespace dmSpine
         msg.m_Offset = offset;
         msg.m_PlaybackRate = playback_rate;
         msg.m_Track = track;
+        msg.m_AdditiveMix = additive_mix;
 
         dmMessage::URL sender;
         dmScript::GetURL(L, &sender);

@@ -369,7 +369,7 @@ namespace dmSpine
         track.m_AnimationInstance->mixDuration = blend_duration;
         track.m_AnimationInstance->trackTime = dmMath::Clamp(offset, track.m_AnimationInstance->animationStart, track.m_AnimationInstance->animationEnd);
         if (additive_mix) {
-            track.m_AnimationInstance->mixBlend = spMixBlend.SP_MIX_BLEND_ADD;
+            track.m_AnimationInstance->mixBlend = SP_MIX_BLEND_ADD;
         }
 
         track.m_CallbackInfo = 0x0;

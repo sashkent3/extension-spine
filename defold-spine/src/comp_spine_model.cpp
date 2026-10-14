@@ -102,7 +102,7 @@ namespace dmSpine
         uint32_t                                m_RenderObjectsInUse;
         uint32_t                                m_FrameId;              // Incremented once per frame in CompSpineModelRender
         uint32_t                                m_VertexBufferFrameId;  // Frame the contents of m_VertexBufferData belong to
-        uint32_t                                m_ProfiledVertexCount;  // Vertices already reported to the profiler this frame
+        uint32_t                                m_UploadedVertexCount;  // Vertices already uploaded (and profiled) this frame
         uint8_t                                 m_Is16BitIndex : 1;
     };
 
@@ -137,7 +137,7 @@ namespace dmSpine
         world->m_RenderObjectsInUse = 0;
         world->m_FrameId = 0;
         world->m_VertexBufferFrameId = 0;
-        world->m_ProfiledVertexCount = 0;
+        world->m_UploadedVertexCount = 0;
 
         dmGraphics::HVertexStreamDeclaration stream_declaration = dmGraphics::NewVertexStreamDeclaration(context->m_GraphicsContext);
         dmGraphics::AddVertexStream(stream_declaration, "position", 3, dmGraphics::TYPE_FLOAT, false);
@@ -1327,7 +1327,7 @@ namespace dmSpine
                     world->m_VertexBufferFrameId = world->m_FrameId;
                     world->m_VertexBufferData.SetSize(0);
                     world->m_FrameIndexData.SetSize(0);
-                    world->m_ProfiledVertexCount = 0;
+                    world->m_UploadedVertexCount = 0;
                 }
                 world->m_IndexBufferData.SetSize(0);
                 world->m_PackedIndexBufferData.SetSize(0);
@@ -1346,8 +1346,12 @@ namespace dmSpine
                 if (vertex_data_size && index_data_size)
                 {
                     PackIndexBufferData(world);
-                    dmGraphics::SetVertexBufferData(world->m_VertexBuffer, vertex_data_size,
-                                                    world->m_VertexBufferData.Begin(), dmGraphics::BUFFER_USAGE_DYNAMIC_DRAW);
+                    // An earlier dispatch this frame already uploaded identical vertex data
+                    if (world->m_VertexBufferData.Size() != world->m_UploadedVertexCount)
+                    {
+                        dmGraphics::SetVertexBufferData(world->m_VertexBuffer, vertex_data_size,
+                                                        world->m_VertexBufferData.Begin(), dmGraphics::BUFFER_USAGE_DYNAMIC_DRAW);
+                    }
                     dmGraphics::SetIndexBufferData(world->m_IndexBuffer, index_data_size,
                                                    world->m_PackedIndexBufferData.Begin(), dmGraphics::BUFFER_USAGE_DYNAMIC_DRAW);
 
@@ -1374,9 +1378,9 @@ namespace dmSpine
                     }
 
                     // Only count vertices generated since the previous dispatch of this frame
-                    DM_PROPERTY_ADD_U32(rmtp_SpineVertexCount, world->m_VertexBufferData.Size() - world->m_ProfiledVertexCount);
-                    DM_PROPERTY_ADD_U32(rmtp_SpineVertexSize, sizeof(dmSpine::SpineVertex) * (world->m_VertexBufferData.Size() - world->m_ProfiledVertexCount));
-                    world->m_ProfiledVertexCount = world->m_VertexBufferData.Size();
+                    DM_PROPERTY_ADD_U32(rmtp_SpineVertexCount, world->m_VertexBufferData.Size() - world->m_UploadedVertexCount);
+                    DM_PROPERTY_ADD_U32(rmtp_SpineVertexSize, sizeof(dmSpine::SpineVertex) * (world->m_VertexBufferData.Size() - world->m_UploadedVertexCount));
+                    world->m_UploadedVertexCount = world->m_VertexBufferData.Size();
                     DM_PROPERTY_ADD_U32(rmtp_SpineIndexSize, index_data_size);
                 }
                 break;
